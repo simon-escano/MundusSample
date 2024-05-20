@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -27,5 +28,17 @@ public class DecalHelper {
 
         // Set the decal's rotation
         decal.setRotation(rotation);
+    }
+
+    public static void applyLighting(Decal decal, Camera camera) {
+        float renderDistance = 700f;
+        float distance = camera.position.dst(decal.getPosition());
+        float darkness = 0.625f - (distance / renderDistance);
+        darkness = Math.max(darkness, 0f);  // Ensure darkness is not less than 0
+        decal.setColor(new Color(darkness, darkness, darkness, 1f));
+    }
+
+    public static float offset(int height) {
+        return ((float) height / 2) - 30;
     }
 }

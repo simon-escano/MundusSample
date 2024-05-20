@@ -19,14 +19,18 @@ import com.mbrlabs.mundus.commons.Scene;
 import com.mbrlabs.mundus.commons.terrain.Terrain;
 import com.mbrlabs.mundus.runtime.Mundus;
 
+import java.awt.event.KeyEvent;
+
 public class MyGdxGame extends ApplicationAdapter {
 	private Mundus mundus;
 	private Scene scene;
-
 	private FirstPersonCameraController controller;
+	public static Terrain terrain;
 	private Array<Decal> mapDecals = new Array<>();
 	private DecalBatch decalBatch;
-
+	private Monster monster;
+	private boolean showMapDecals = true;
+	private int decalCtr = 0;
 
 	@Override
 	public void create () {
@@ -34,14 +38,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		scene = mundus.loadScene("Main Scene.mundus");
 
 		scene.cam.position.set(230, 150, 190);
-		scene.cam.direction.rotate(Vector3.Y, 70);
-		scene.cam.direction.rotate(Vector3.Z, -20);
 
 		controller = new FirstPersonCameraController(scene.cam);
 		controller.setVelocity(100f);
 		Gdx.input.setInputProcessor(controller);
 		Map myMap = new Map();
-		Terrain terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
+		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
+		monster = new Monster("malt-1.png", 0.5f, 9,30);
 		mapDecals = myMap.loadMap(terrain);
 
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
@@ -50,43 +53,33 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 1);
-
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		Terrain terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
-		float height = terrain.getHeightAtWorldCoord(scene.cam.position.x,scene.cam.position.z, new Matrix4());
-		scene.cam.position.y = height;
+
+		if (Gdx.input.isKeyPressed(Input.Keys.F1)) {
+			showMapDecals = !showMapDecals;
+		}
+
+		if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+			monster.setDecal("malt-" + ((decalCtr++ % 2) + 1) + ".png");
+		}
+
+		scene.cam.position.y = terrain.getHeightAtWorldCoord(scene.cam.position.x,scene.cam.position.z, new Matrix4());
 		controller.update();
 		scene.sceneGraph.update();
 		scene.render();
-		for (Decal decal : mapDecals) {
-			decalBatch.add(decal);
-			double distance;
-			double maxDistance=700;
-			Vector3 playerPos = scene.cam.position;
-			Vector3 decalPos = decal.getPosition();
-			distance = Math.sqrt(
-							Math.pow(playerPos.x-decalPos.x,2) +
-							Math.pow(playerPos.y-decalPos.y,2) +
-							Math.pow(playerPos.z-decalPos.z,2));
-			// Calculate blackness factor
-			double blackness = distance / maxDistance;
-			blackness = Math.max(0, Math.min(blackness, 1)); // Clamp blackness between 0 and 1
-			float darkness= (float) (0.75- blackness);
-			if(darkness<0){
-				darkness = 0;
+
+		if (showMapDecals) {
+			for (Decal decal : mapDecals) {
+				decalBatch.add(decal);
+				DecalHelper.faceCameraPerpendicularToGround(decal, scene.cam);
+				DecalHelper.applyLighting(decal, scene.cam);
 			}
-			float r = darkness;
-			float g = darkness;
-			float b = darkness;
-			float a = 1.0f; // Keep alpha constant
-			Color color = new Color(r, g, b, a);
-			decal.setColor(color);
 		}
 
-		for (Decal decal : mapDecals) {
-			DecalHelper.faceCameraPerpendicularToGround(decal, scene.cam);
-		}
-
+		monster.chase(scene.cam.position);
+		decalBatch.add(monster.decal);
+		DecalHelper.faceCameraPerpendicularToGround(monster.decal, scene.cam);
+		DecalHelper.applyLighting(monster.decal, scene.cam);
 
 		decalBatch.flush();
 	}
