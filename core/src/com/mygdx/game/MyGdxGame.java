@@ -31,6 +31,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Monster monster;
 	private boolean showMapDecals = true;
 	private int decalCtr = 0;
+	private float playerVelocity = 100f;
+	private boolean isJumping = false;
+	float time;
+	float yMult = 0;
 
 	@Override
 	public void create () {
@@ -40,11 +44,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		scene.cam.position.set(230, 150, 190);
 
 		controller = new FirstPersonCameraController(scene.cam);
-		controller.setVelocity(100f);
+		controller.setVelocity(playerVelocity);
 		Gdx.input.setInputProcessor(controller);
 		Map myMap = new Map();
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
-		monster = new Monster("malt-1.png", 0.5f, 9,30);
+		monster = new Monster("malt-1.png", 0.5f, 12,40);
 		mapDecals = myMap.loadMap(terrain);
 
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
@@ -55,15 +59,42 @@ public class MyGdxGame extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		if (Gdx.input.isKeyPressed(Input.Keys.F1)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
 			showMapDecals = !showMapDecals;
 		}
 
-		if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
 			monster.setDecal("malt-" + ((decalCtr++ % 2) + 1) + ".png");
 		}
 
-		scene.cam.position.y = terrain.getHeightAtWorldCoord(scene.cam.position.x,scene.cam.position.z, new Matrix4());
+		if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+			playerVelocity = 200f;
+			controller.setVelocity(playerVelocity);
+		} else {
+			if (playerVelocity != 100f) {
+				playerVelocity = 100f;
+				controller.setVelocity(playerVelocity);
+			}
+		}
+
+		float height = terrain.getHeightAtWorldCoord(scene.cam.position.x,scene.cam.position.z, new Matrix4());
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			isJumping = true;
+			scene.cam.position.y += 30;
+		}
+
+		if (isJumping) {
+			scene.cam.position.y = Math.max(scene.cam.position.y - yMult, height);
+			yMult += 0.1;
+			if (scene.cam.position.y == height) {
+				isJumping = false;
+				yMult = 0;
+			}
+		} else {
+			scene.cam.position.y = height;
+		}
+
 		controller.update();
 		scene.sceneGraph.update();
 		scene.render();
