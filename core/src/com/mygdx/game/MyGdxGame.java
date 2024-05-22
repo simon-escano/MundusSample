@@ -31,10 +31,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Monster monster;
 	private boolean showMapDecals = true;
 	private int decalCtr = 0;
-	private float playerVelocity = 100f;
-	private boolean isJumping = false;
-	float time;
-	float yMult = 0;
+	public MainPlayer mainPlayer;
+	public int mainPlayerDecalCtr = 0;
+	public String[] mainPlayerDecals = {"astronaut_spritesheet.png", "astronaut_spritesheet_sus.png", "astronaut_spritesheet_pixel.png"};
 
 	@Override
 	public void create () {
@@ -43,9 +42,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		scene.cam.position.set(230, 150, 190);
 
-		controller = new FirstPersonCameraController(scene.cam);
-		controller.setVelocity(playerVelocity);
-		Gdx.input.setInputProcessor(controller);
+		mainPlayer = new MainPlayer("astronaut_spritesheet.png", 100f, scene.cam);
 		Map myMap = new Map();
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
 		monster = new Monster("malt-1.png", 0.5f, 12,40);
@@ -67,35 +64,12 @@ public class MyGdxGame extends ApplicationAdapter {
 			monster.setDecal("malt-" + ((decalCtr++ % 2) + 1) + ".png");
 		}
 
-		if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-			playerVelocity = 200f;
-			controller.setVelocity(playerVelocity);
-		} else {
-			if (playerVelocity != 100f) {
-				playerVelocity = 100f;
-				controller.setVelocity(playerVelocity);
-			}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+			mainPlayerDecalCtr++;
+			mainPlayer = new MainPlayer(mainPlayerDecals[mainPlayerDecalCtr % 3], 100f, scene.cam);
 		}
 
-		float height = terrain.getHeightAtWorldCoord(scene.cam.position.x,scene.cam.position.z, new Matrix4());
-
-		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			isJumping = true;
-			scene.cam.position.y += 30;
-		}
-
-		if (isJumping) {
-			scene.cam.position.y = Math.max(scene.cam.position.y - yMult, height);
-			yMult += 0.1;
-			if (scene.cam.position.y == height) {
-				isJumping = false;
-				yMult = 0;
-			}
-		} else {
-			scene.cam.position.y = height;
-		}
-
-		controller.update();
+		mainPlayer.update(decalBatch);
 		scene.sceneGraph.update();
 		scene.render();
 
@@ -109,6 +83,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		monster.chase(scene.cam.position);
 		decalBatch.add(monster.decal);
+		DecalHelper.applyLighting(mainPlayer.getDecal(), scene.cam);
 		DecalHelper.faceCameraPerpendicularToGround(monster.decal, scene.cam);
 		DecalHelper.applyLighting(monster.decal, scene.cam);
 
