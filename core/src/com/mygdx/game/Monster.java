@@ -9,72 +9,54 @@ import com.badlogic.gdx.math.Vector3;
 import com.mbrlabs.mundus.commons.terrain.Terrain;
 
 import java.util.Random;
+import java.util.Vector;
 
-public class Monster {
-    private final Vector3 position;
-    private final float velocity;
-    private final int width;
-    int height;
-    public Decal decal;
-    public Monster(String path, float velocity, int width, int height) {
-        this.velocity = velocity;
-        this.width = width;
-        this.height = height;
-        position = new Vector3();
-
-        setDecal(path).setPosition();
-        // 174 x 606
-        // 215 x 584
-    }
-
-    public Vector3 getPosition() {
-        return position;
-    }
-
-    public Monster setPosition() {
+public class Monster extends Entity {
+    public Monster(String spriteSheetPath, int spriteWidth, int spriteHeight, float velocity) {
+        super(spriteSheetPath, spriteWidth, spriteHeight, velocity);
         Random random = new Random();
-        float randomX = random.nextFloat(500) + 1;
-        float randomZ = random.nextFloat(500) + 1;
-        return this.setPosition(randomX, getY(), randomZ);
+        setPosition(100, getY(100, 200), 200);
     }
 
-    public Monster setPosition(float x, float y, float z) {
-        position.set(x, y, z);
-        decal.setPosition(position);
-        return this;
-    }
+    @Override
+    public void update() {
+        stateTime += Gdx.graphics.getDeltaTime();
+        setDecal();
+        if (stateTime > animationSpeed) {
+            spriteCtr++;
+            if (spriteCtr > 4) {
+                spriteCtr = 1;
+            }
+            stateTime = 0f;
+        }
+        direction = getRelativeDirection(MyGdxGame.mainPlayer.getPosition());
+        setPosition(getPosition());
 
-    public float getY() {
-        return MyGdxGame.terrain.getHeightAtWorldCoord(position.x, position.z, new Matrix4()) + DecalHelper.offset(height);
+//        chase(MyGdxGame.mainPlayer.getPosition());
+
+        MyGdxGame.decalBatch.add(getDecal());
+        DecalHelper.applyLighting(getDecal(), MyGdxGame.scene.cam);
+        DecalHelper.faceCameraPerpendicularToGround(getDecal(), MyGdxGame.scene.cam);
     }
 
     public void chase(Vector3 player) {
-        float x = getPosition().x;
-        float z = getPosition().z;
-
-        if (position.dst(player) < 60) {
-            setPosition(x, getY(), z);
+        if (getPosition().dst(player) < 60) {
+            setPosition(getPosition().x, getY(), getPosition().z);
             return;
         }
 
-        if (x < player.x) {
-            x += velocity;
-        } else if (x > player.x) {
-            x -= velocity;
+        if (getPosition().x < player.x) {
+            getPosition().x += velocity;
+        } else if (getPosition().x > player.x) {
+            getPosition().x -= velocity;
         }
 
-        if (z < player.z) {
-            z += velocity;
+        if (getPosition().z < player.z) {
+            getPosition().z += velocity;
         } else if (getPosition().z > player.z) {
-            z -= velocity;
+            getPosition().z -= velocity;
         }
 
-        setPosition(x, getY(), z);
-    }
-
-    public Monster setDecal(String path) {
-        TextureRegion region = new TextureRegion(new Texture(Gdx.files.internal("monsters/" + path)));
-        decal = Decal.newDecal(width, height, region, true);
-        return this;
+        setPosition(getPosition().x, getY(), getPosition().z);
     }
 }

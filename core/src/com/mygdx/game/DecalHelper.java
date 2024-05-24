@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 
 public class DecalHelper {
