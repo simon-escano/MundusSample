@@ -51,7 +51,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
 		map = new Map();
 
-		mainPlayer = new MainPlayer(4, "_sus",100f);
+		mainPlayer = new MainPlayer(4, "_yellow",100f);
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
 		OrthographicCamera fontCam = new OrthographicCamera();
@@ -145,10 +145,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		client.addListener(new Listener() {
 			@Override
 			public void received(Connection connection, Object object) {
-				if (object instanceof ServerPlayer) {
-					ServerPlayer player = (ServerPlayer) object;
-					playerUpdates.add(player);
-				}
+			if (object instanceof ServerPlayer) {
+				ServerPlayer player = (ServerPlayer) object;
+				playerUpdates.add(player);
+			}
 			}
 		});
 	}
@@ -157,5 +157,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void dispose () {
 		mundus.dispose();
 		font.dispose();
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		scene.cam.viewportWidth = width;
+		scene.cam.viewportHeight = height;
+		scene.cam.update();
+
+		fontBatch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 	}
 }
