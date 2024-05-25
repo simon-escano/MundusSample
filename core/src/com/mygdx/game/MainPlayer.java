@@ -10,14 +10,15 @@ import com.badlogic.gdx.math.Vector3;
 public class MainPlayer extends Player {
     private final FirstPersonCameraController controller;
     private final Camera camera;
-    public ServerPlayer serverPlayer;
 
-    public MainPlayer(float velocity) {
+    public MainPlayer(int id, String color, float velocity) {
         super();
-        serverPlayer = new ServerPlayer();
+        serverPlayer = new ServerPlayer(id, color);
 
         camera = MyGdxGame.scene.cam;
+        camera.position.set(serverPlayer.getPosition());
         setPosition(camera.position);
+        setPosition(serverPlayer.getPosition());
         controller = new FirstPersonCameraController(MyGdxGame.scene.cam);
         setVelocity(velocity);
         Gdx.input.setInputProcessor(controller);
@@ -57,24 +58,8 @@ public class MainPlayer extends Player {
         setState(state);
         setDirection(Utils.vectorToDirection(camera.direction.x, camera.direction.z));
         controller.update();
-    }
 
-    @Override
-    public void setPosition(Vector3 position) {
-        super.setPosition(position);
-        serverPlayer.setPosition(position);
-    }
-
-    @Override
-    public void setDirection(Direction direction) {
-        super.setDirection(direction);
-        serverPlayer.setDirection(direction);
-    }
-
-    @Override
-    public void setState(State state) {
-        super.setState(state);
-        serverPlayer.setState(state);
+        MyGdxGame.client.sendTCP(this.serverPlayer);
     }
 
     @Override

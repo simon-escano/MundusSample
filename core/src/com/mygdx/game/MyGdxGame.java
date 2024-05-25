@@ -9,49 +9,61 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import com.mbrlabs.mundus.commons.Scene;
 import com.mbrlabs.mundus.commons.terrain.Terrain;
 import com.mbrlabs.mundus.runtime.Mundus;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MyGdxGame extends ApplicationAdapter {
 	private Mundus mundus;
 	public static Scene scene;
 	public static Terrain terrain;
-	private Array<Decal> mapDecals = new Array<>();
 	public static DecalBatch decalBatch;
-	private Monster monster;
+	public Map map;
+	private ArrayList<Player> otherPlayers;
+	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
 	private boolean showMapDecals = true;
 	public static MainPlayer mainPlayer;
-	SpriteBatch fontBatch;
-	BitmapFont font;
-	OrthographicCamera fontCam;
+	private SpriteBatch fontBatch;
+	private BitmapFont font;
+
+	public static Client client;
 
 	@Override
 	public void create () {
+		otherPlayers = new ArrayList<>();
+		playerUpdates = new ConcurrentLinkedQueue<>();
 		mundus = new Mundus(Gdx.files.internal("mundus"));
 		scene = mundus.loadScene("Main Scene.mundus");
 
-		scene.cam.position.set(230, 150, 190);
+		handleClient();
+
+		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
+		map = new Map();
+
+		mainPlayer = new MainPlayer(4, "_sus",100f);
+
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
-		fontCam = new OrthographicCamera();
+		OrthographicCamera fontCam = new OrthographicCamera();
 		fontCam.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		fontBatch = new SpriteBatch();
 		fontBatch.setProjectionMatrix(fontCam.combined);
-		mainPlayer = new MainPlayer(100f);
-		Map myMap = new Map();
-		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
-		monster = new Monster("astronaut_spritesheet.png", 40, 40, 0.5f);
-		mapDecals = myMap.loadMap(terrain);
 
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		ScreenUtils.clear(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -60,17 +72,22 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 		mainPlayer.update();
-		monster.update();
+
+		while (!playerUpdates.isEmpty()) {
+			ServerPlayer serverPlayer = playerUpdates.poll();
+			updatePlayers(serverPlayer);
+		}
+
+		for (Player player : otherPlayers) {
+			if (player.serverPlayer.getID() != mainPlayer.serverPlayer.getID()) {
+				player.update();
+			}
+		}
 		scene.sceneGraph.update();
 		scene.render();
 
-
 		if (showMapDecals) {
-			for (Decal decal : mapDecals) {
-				decalBatch.add(decal);
-				DecalHelper.faceCameraPerpendicularToGround(decal, scene.cam);
-				DecalHelper.applyLighting(decal, scene.cam);
-			}
+			map.update();
 		}
 
 		decalBatch.flush();
@@ -80,15 +97,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		font.setColor(Color.WHITE);
 		String[][] strings = {
 			{
-				"x: " + String.format("%.2f", mainPlayer.getPosition().x),
-				"y: " + String.format("%.2f", mainPlayer.getPosition().y),
-				"z: " + String.format("%.2f", mainPlayer.getPosition().z),
 				mainPlayer.serverPlayer.toString()
-			},
-			{
-				"Monster x: " + String.format("%.2f", monster.getDecal().getPosition().x),
-				"Monster y: " + String.format("%.2f", monster.getPosition().y),
-				"Monster z: " + String.format("%.2f", monster.getPosition().z),
 			}
 		};
 
@@ -98,6 +107,50 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 		fontBatch.end();
+	}
+
+	public void updatePlayers(ServerPlayer serverPlayer) {
+		boolean updated = false;
+		for (Player player : otherPlayers) {
+			if (player.serverPlayer.getID() == serverPlayer.getID()) {
+				player.serverPlayer.setPosition(serverPlayer.getPosition());
+				player.serverPlayer.setDirection(serverPlayer.getDirection());
+				player.serverPlayer.setState(serverPlayer.getState());
+				updated = true;
+				break;
+			}
+		}
+		if (!updated) {
+			otherPlayers.add(new Player(serverPlayer));
+		}
+	}
+
+	public void handleClient() {
+		client = new Client();
+		client.start();
+		Kryo kryo = client.getKryo();
+		kryo.register(ServerPlayer.class);
+		kryo.register(Entity.Direction.class);
+		kryo.register(Entity.State.class);
+		kryo.register(Vector3.class);
+		kryo.register(String.class);
+
+		try {
+			client.connect(5000, "localhost", 54555, 54777);
+		} catch (IOException e) {
+			Gdx.app.log("GameClient", "Unable to connect to server: " + e.getMessage());
+			Gdx.app.exit();
+		}
+
+		client.addListener(new Listener() {
+			@Override
+			public void received(Connection connection, Object object) {
+				if (object instanceof ServerPlayer) {
+					ServerPlayer player = (ServerPlayer) object;
+					playerUpdates.add(player);
+				}
+			}
+		});
 	}
 
 	@Override

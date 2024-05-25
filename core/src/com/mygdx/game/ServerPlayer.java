@@ -2,17 +2,29 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.Random;
+
 public class ServerPlayer {
+    private int id;
     private Vector3 position;
     private Entity.Direction direction;
     private Entity.State state;
-    private final String color;
+    private String color;
 
-    public ServerPlayer() {
+    public ServerPlayer() {}
+
+    public ServerPlayer(int id, String color) {
+        this.id = id;
         direction = Entity.Direction.N;
         state = Entity.State.IDLE;
-        position = new Vector3(50, 15, 50);
-        color = "Red";
+        Random random = new Random();
+        position = new Vector3();
+        position.set(random.nextInt(100) + 1, 15, random.nextInt(100) + 1);
+        this.color = color;
+    }
+
+    public int getID() {
+        return id;
     }
 
     public void setPosition(Vector3 position) {
@@ -39,11 +51,12 @@ public class ServerPlayer {
         return state;
     }
 
+
     public String getColor() {
         return color;
     }
 
     public String toString() {
-        return position.toString() + "\n" + direction.toString() + "\n" + state.toString();
+        return "Position: " + position.toString() + "\nDirection: " + direction.toString() + "\nState: " + state.toString();
     }
 }

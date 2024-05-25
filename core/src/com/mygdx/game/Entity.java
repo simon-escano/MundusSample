@@ -7,13 +7,15 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
+import java.io.Serializable;
+
 public abstract class Entity {
     private static final int FRAME_COLS = 8, FRAME_ROWS = 5;
 
-    public enum Direction {
+    public enum Direction implements Serializable {
         S, SW, W, NW, N, NE, E, SE
     }
-    public enum State {
+    public enum State implements Serializable {
         IDLE, WALKING, SPRINTING
     }
     protected Direction direction;
@@ -72,6 +74,7 @@ public abstract class Entity {
         if (spriteSheetPath.isEmpty()) {
             spriteSheetPath = "badlogic.jpg";
         }
+
         Texture spriteSheet = new Texture(Gdx.files.internal("spritesheets/" + spriteSheetPath));
         sprites = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
     }
