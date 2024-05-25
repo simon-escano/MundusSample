@@ -3,75 +3,78 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
 public class MainPlayer extends Player {
     private final FirstPersonCameraController controller;
-    TextureRegion[][] sprites;
-    public int spriteCtr = 1;
-    public float stateTime = 0f;
-    public float animationSpeed = 0.1f;
+    private final Camera camera;
+    public ServerPlayer serverPlayer;
 
     public MainPlayer(float velocity) {
-        super("", 0, 0, velocity);
-        setPosition(MyGdxGame.scene.cam.position);
-        controller = new FirstPersonCameraController(MyGdxGame.scene.cam);
-        controller.setVelocity(velocity);
-        Gdx.input.setInputProcessor(controller);
+        super();
+        serverPlayer = new ServerPlayer();
 
-//        Texture spriteSheet = new Texture(Gdx.files.internal("spritesheets/" + spriteSheetPath));
-//        sprites = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
+        camera = MyGdxGame.scene.cam;
+        setPosition(camera.position);
+        controller = new FirstPersonCameraController(MyGdxGame.scene.cam);
+        setVelocity(velocity);
+        Gdx.input.setInputProcessor(controller);
     }
 
     public void update() {
-//
-//        if (getDirection() == null) {
-//            state = State.IDLE;
-//        } else {
-//            direction = getDirection();
-//            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-//                state = State.SPRINTING;
-//                animationSpeed = 0.025f;
-//                setVelocity(200f);
-//            } else {
-//                if (getVelocity() != 100f) {
-//                    setVelocity(100f);
-//                }
-//                state = State.WALKING;
-//                animationSpeed = 0.1f;
-//            }
-//        }
-//
-//        switch (state) {
-//            case IDLE:
-//                spriteCtr = 0;
-//                break;
-//            case SPRINTING:
-//            case WALKING:
-//                stateTime += Gdx.graphics.getDeltaTime();
-//                if (stateTime > animationSpeed) {
-//                    spriteCtr++;
-//                    if (spriteCtr > 4) {
-//                        spriteCtr = 1;
-//                    }
-//                    stateTime = 0f;
-//                }
-//                break;
-//        }
-//
-//        float height = MyGdxGame.terrain.getHeightAtWorldCoord(position.x, position.z + 50, new Matrix4()) + DecalHelper.offset(40);
-//        decal = Decal.newDecal(40, 40, sprites[spriteCtr][direction.ordinal()], true);
-//        decal.setPosition(position.x, height, position.z + 50);
-//        decal.setRotationY(-180);
-//        position.y = Math.max(MyGdxGame.terrain.getHeightAtWorldCoord(position.x, position.z, new Matrix4()), height + 20);
-//        decalBatch.add(decal);
-        getPosition().y = MyGdxGame.terrain.getHeightAtWorldCoord(getPosition().x, getPosition().z, new Matrix4());
+        position.y = MyGdxGame.terrain.getHeightAtWorldCoord(position.x, position.z, new Matrix4());
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                setState(State.SPRINTING);
+            } else {
+                setState(State.WALKING);
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) {
+                setDirection(Entity.Direction.NE);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) {
+                setDirection(Entity.Direction.NW);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D)) {
+                setDirection(Entity.Direction.SE);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A)) {
+                setDirection(Entity.Direction.SW);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                setDirection(Entity.Direction.N);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                setDirection(Entity.Direction.S);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                setDirection(Entity.Direction.E);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                setDirection(Entity.Direction.W);
+            }
+        } else {
+            setState(State.IDLE);
+        }
+
+        setPosition(position);
+        setState(state);
+        setDirection(Utils.vectorToDirection(camera.direction.x, camera.direction.z));
         controller.update();
+    }
+
+    @Override
+    public void setPosition(Vector3 position) {
+        super.setPosition(position);
+        serverPlayer.setPosition(position);
+    }
+
+    @Override
+    public void setDirection(Direction direction) {
+        super.setDirection(direction);
+        serverPlayer.setDirection(direction);
+    }
+
+    @Override
+    public void setState(State state) {
+        super.setState(state);
+        serverPlayer.setState(state);
     }
 
     @Override

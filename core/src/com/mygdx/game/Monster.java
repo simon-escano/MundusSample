@@ -20,43 +20,51 @@ public class Monster extends Entity {
 
     @Override
     public void update() {
-        stateTime += Gdx.graphics.getDeltaTime();
-        setDecal();
-        if (stateTime > animationSpeed) {
-            spriteCtr++;
-            if (spriteCtr > 4) {
-                spriteCtr = 1;
-            }
-            stateTime = 0f;
+        switch (state) {
+            case IDLE:
+                spriteCtr = 0;
+                break;
+            case SPRINTING:
+            case WALKING:
+                stateTime += Gdx.graphics.getDeltaTime();
+                if (stateTime > animationSpeed) {
+                    spriteCtr++;
+                    if (spriteCtr > 4) {
+                        spriteCtr = 1;
+                    }
+                    stateTime = 0f;
+                }
+                break;
         }
-        direction = getRelativeDirection(MyGdxGame.mainPlayer.getPosition());
-        setPosition(getPosition());
+
+        setDecal();
+        setPosition(position);
 
 //        chase(MyGdxGame.mainPlayer.getPosition());
 
-        MyGdxGame.decalBatch.add(getDecal());
-        DecalHelper.applyLighting(getDecal(), MyGdxGame.scene.cam);
-        DecalHelper.faceCameraPerpendicularToGround(getDecal(), MyGdxGame.scene.cam);
+        MyGdxGame.decalBatch.add(decal);
+        DecalHelper.applyLighting(decal, MyGdxGame.scene.cam);
+        DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
     }
 
     public void chase(Vector3 player) {
-        if (getPosition().dst(player) < 60) {
-            setPosition(getPosition().x, getY(), getPosition().z);
+        if (position.dst(player) < 60) {
+            setPosition(position.x, getY(), position.z);
             return;
         }
 
-        if (getPosition().x < player.x) {
-            getPosition().x += velocity;
-        } else if (getPosition().x > player.x) {
-            getPosition().x -= velocity;
+        if (position.x < player.x) {
+            position.x += velocity;
+        } else if (position.x > player.x) {
+            position.x -= velocity;
         }
 
-        if (getPosition().z < player.z) {
-            getPosition().z += velocity;
-        } else if (getPosition().z > player.z) {
-            getPosition().z -= velocity;
+        if (position.z < player.z) {
+            position.z += velocity;
+        } else if (position.z > player.z) {
+            position.z -= velocity;
         }
 
-        setPosition(getPosition().x, getY(), getPosition().z);
+        setPosition(position.x, getY(), position.z);
     }
 }

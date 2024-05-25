@@ -83,12 +83,12 @@ public class MyGdxGame extends ApplicationAdapter {
 				"x: " + String.format("%.2f", mainPlayer.getPosition().x),
 				"y: " + String.format("%.2f", mainPlayer.getPosition().y),
 				"z: " + String.format("%.2f", mainPlayer.getPosition().z),
-				mainPlayer.getRelativeDirection(monster.getPosition()).toString()
+				mainPlayer.serverPlayer.toString()
 			},
 			{
 				"Monster x: " + String.format("%.2f", monster.getDecal().getPosition().x),
 				"Monster y: " + String.format("%.2f", monster.getPosition().y),
-				"Monster z: " + String.format("%.2f", monster.getPosition().z)
+				"Monster z: " + String.format("%.2f", monster.getPosition().z),
 			}
 		};
 
