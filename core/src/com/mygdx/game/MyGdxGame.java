@@ -32,6 +32,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public MapDecals mapDecals;
 	private ArrayList<Player> otherPlayers;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
+	private ArrayList<Leviathan> leviathans;
 	private boolean showMapDecals = true;
 	public static MainPlayer mainPlayer;
 	private SpriteBatch fontBatch;
@@ -53,7 +54,10 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		System.out.println(terrain.terrainWidth + " " + terrain.terrainDepth);
 
-		mainPlayer = new MainPlayer(2, "_sus",150f);
+		mainPlayer = new MainPlayer(2, "_pixel",150f);
+		leviathans = new ArrayList<>();
+		leviathans.add(new Python());
+		leviathans.add(new ForestLurker());
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
 		OrthographicCamera fontCam = new OrthographicCamera();
@@ -85,6 +89,11 @@ public class MyGdxGame extends ApplicationAdapter {
 				player.update();
 			}
 		}
+
+		for (Leviathan leviathan : leviathans) {
+			leviathan.update();
+		}
+
 		scene.sceneGraph.update();
 		scene.render();
 

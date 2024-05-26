@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import java.io.Serializable;
 
 public abstract class Entity {
-    private static final int FRAME_COLS = 8, FRAME_ROWS = 5;
+    private static int FRAME_COLS, FRAME_ROWS;
 
     public enum Direction implements Serializable {
         S, SW, W, NW, N, NE, E, SE
@@ -40,6 +40,23 @@ public abstract class Entity {
         this.velocity = velocity;
         setSprites(spriteSheetPath);
         setDecal();
+    }
+
+    public Entity(String spriteSheetPath, int spriteWidth, int spriteHeight, float velocity, int FRAME_ROWS, int FRAME_COLS) {
+        direction = Direction.N;
+        state = State.IDLE;
+        position = new Vector3();
+        this.spriteWidth = spriteWidth;
+        this.spriteHeight = spriteHeight;
+        this.velocity = velocity;
+        setFrames(FRAME_ROWS, FRAME_COLS);
+        setSprites(spriteSheetPath);
+        setDecal();
+    }
+
+    public void setFrames(int row, int col) {
+        FRAME_ROWS = row;
+        FRAME_COLS = col;
     }
 
     public abstract void update();
@@ -75,7 +92,10 @@ public abstract class Entity {
             spriteSheetPath = "badlogic.jpg";
         }
 
-        Texture spriteSheet = new Texture(Gdx.files.internal("spritesheets/" + spriteSheetPath));
+        if (FRAME_ROWS == 0 || FRAME_COLS == 0) {
+            setFrames(5, 8);
+        }
+        Texture spriteSheet = new Texture(Gdx.files.internal(spriteSheetPath));
         sprites = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
     }
 

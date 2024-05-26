@@ -8,7 +8,7 @@ public class Player extends Entity {
     private boolean needsSpriteUpdate;
 
     public Player(ServerPlayer serverPlayer) {
-        super("astronaut_spritesheet" + serverPlayer.getColor() + ".png", 80, 80, 0.5f);
+        super("astronauts/astronaut" + serverPlayer.getColor() + ".png", 80, 80, 0.5f);
         this.serverPlayer = serverPlayer;
         this.position = serverPlayer.getPosition();
         this.direction = serverPlayer.getDirection();
@@ -39,7 +39,7 @@ public class Player extends Entity {
                     if (spriteCtr > 4) {
                         spriteCtr = 1;
                     }
-                    stateTime = 0f;
+                    stateTime = 0;
                 }
                 break;
         }

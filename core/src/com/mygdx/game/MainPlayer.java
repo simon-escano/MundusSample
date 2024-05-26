@@ -28,20 +28,20 @@ public class MainPlayer extends Player {
         Vector3 pastPosition = new Vector3(camera.position);
         controller.update();
         Vector3 potentialPosition = new Vector3(camera.position);
-//        float newHeight = Utils.getHeight(potentialPosition.x, potentialPosition.z);
+        float newHeight = Utils.getHeight(potentialPosition.x, potentialPosition.z);
 
-//        if (newHeight - pastPosition.y > 12) {
-//            camera.position.set(pastPosition);
-//            System.out.println(newHeight - pastPosition.y);
-//        } else {
+        if (newHeight - pastPosition.y > 12) {
+            setPosition(pastPosition);
+            camera.position.set(pastPosition);
+        } else {
             if (potentialPosition.x < 0) potentialPosition.x = 0;
             if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
             if (potentialPosition.z < 0) potentialPosition.z = 0;
             if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
-//            potentialPosition.y = newHeight;
+            potentialPosition.y = newHeight;
             setPosition(potentialPosition);
             camera.position.set(potentialPosition);
-//        }
+        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {

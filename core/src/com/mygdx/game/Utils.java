@@ -5,6 +5,10 @@ import com.badlogic.gdx.math.Matrix4;
 public class Utils {
     public static Entity.Direction vectorToDirection(float x, float z) {
         float angle = (float) Math.toDegrees(Math.atan2(x, z));
+        return angleToDirection(angle);
+    }
+
+    public static Entity.Direction angleToDirection(float angle) {
         if (angle < 0) {
             angle += 360;
         }
