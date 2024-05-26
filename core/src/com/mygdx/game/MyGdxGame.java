@@ -29,7 +29,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public static Scene scene;
 	public static Terrain terrain;
 	public static DecalBatch decalBatch;
-	public Map map;
+	public MapDecals mapDecals;
 	private ArrayList<Player> otherPlayers;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
 	private boolean showMapDecals = true;
@@ -43,15 +43,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create () {
 		otherPlayers = new ArrayList<>();
 		playerUpdates = new ConcurrentLinkedQueue<>();
-		mundus = new Mundus(Gdx.files.internal("mundus"));
+		mundus = new Mundus(Gdx.files.internal("world"));
 		scene = mundus.loadScene("Main Scene.mundus");
 
 		handleClient();
 
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
-		map = new Map();
+		mapDecals = new MapDecals();
 
-		mainPlayer = new MainPlayer(4, "_yellow",100f);
+		System.out.println(terrain.terrainWidth + " " + terrain.terrainDepth);
+
+		mainPlayer = new MainPlayer(2, "_sus",150f);
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
 		OrthographicCamera fontCam = new OrthographicCamera();
@@ -87,7 +89,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		scene.render();
 
 		if (showMapDecals) {
-			map.update();
+			mapDecals.update();
 		}
 
 		decalBatch.flush();

@@ -25,7 +25,23 @@ public class MainPlayer extends Player {
     }
 
     public void update() {
-        position.y = MyGdxGame.terrain.getHeightAtWorldCoord(position.x, position.z, new Matrix4());
+        Vector3 pastPosition = new Vector3(camera.position);
+        controller.update();
+        Vector3 potentialPosition = new Vector3(camera.position);
+//        float newHeight = Utils.getHeight(potentialPosition.x, potentialPosition.z);
+
+//        if (newHeight - pastPosition.y > 12) {
+//            camera.position.set(pastPosition);
+//            System.out.println(newHeight - pastPosition.y);
+//        } else {
+            if (potentialPosition.x < 0) potentialPosition.x = 0;
+            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
+            if (potentialPosition.z < 0) potentialPosition.z = 0;
+            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
+//            potentialPosition.y = newHeight;
+            setPosition(potentialPosition);
+            camera.position.set(potentialPosition);
+//        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
@@ -33,31 +49,11 @@ public class MainPlayer extends Player {
             } else {
                 setState(State.WALKING);
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) {
-                setDirection(Entity.Direction.NE);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) {
-                setDirection(Entity.Direction.NW);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D)) {
-                setDirection(Entity.Direction.SE);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A)) {
-                setDirection(Entity.Direction.SW);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                setDirection(Entity.Direction.N);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                setDirection(Entity.Direction.S);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                setDirection(Entity.Direction.E);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                setDirection(Entity.Direction.W);
-            }
         } else {
             setState(State.IDLE);
         }
 
-        setPosition(position);
-        setState(state);
         setDirection(Utils.vectorToDirection(camera.direction.x, camera.direction.z));
-        controller.update();
 
         MyGdxGame.client.sendTCP(this.serverPlayer);
     }

@@ -24,11 +24,11 @@ public class DecalHelper {
         float renderDistance = 700f;
         float distance = camera.position.dst(decal.getPosition());
         float darkness = 0.625f - (distance / renderDistance);
-        darkness = Math.max(darkness, 0.1f);  // Ensure darkness is not less than 0
+        darkness = Math.max(darkness, 0.1f);
         decal.setColor(new Color(darkness, darkness, darkness, 1f));
     }
 
     public static float offset(int height) {
-        return ((float) height / 2) - 30;
+        return ((float) height / 2) - 58;
     }
 }

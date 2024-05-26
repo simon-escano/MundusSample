@@ -17,9 +17,8 @@ public class ServerPlayer {
         this.id = id;
         direction = Entity.Direction.N;
         state = Entity.State.IDLE;
-        Random random = new Random();
         position = new Vector3();
-        position.set(random.nextInt(100) + 1, 15, random.nextInt(100) + 1);
+        position.set(260, Utils.getHeight(260, 230), 230);
         this.color = color;
     }
 

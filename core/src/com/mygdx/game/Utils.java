@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.math.Matrix4;
+
 public class Utils {
     public static Entity.Direction vectorToDirection(float x, float z) {
         float angle = (float) Math.toDegrees(Math.atan2(x, z));
@@ -25,5 +27,9 @@ public class Utils {
             return Entity.Direction.SE;
         }
         return null;
+    }
+
+    public static float getHeight(float x, float z) {
+        return MyGdxGame.terrain.getHeightAtWorldCoord(x, z, new Matrix4());
     }
 }

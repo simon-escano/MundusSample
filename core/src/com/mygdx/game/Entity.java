@@ -92,7 +92,7 @@ public abstract class Entity {
     }
 
     public float getY(float x, float z) {
-        return MyGdxGame.terrain.getHeightAtWorldCoord(x, z, new Matrix4()) + DecalHelper.offset(spriteHeight);
+        return Utils.getHeight(x, z) + DecalHelper.offset(spriteHeight);
     }
 
     public void setVelocity(float velocity) {
