@@ -48,12 +48,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		playerUpdates = new ConcurrentLinkedQueue<>();
 		mundus = new Mundus(Gdx.files.internal("world"));
 		scene = mundus.loadScene("Main Scene.mundus");
-
-		handleClient();
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
 		mapDecals = new MapDecals();
-
-		System.out.println(terrain.terrainWidth + " " + terrain.terrainDepth);
 
 		gameSections = new ArrayList<>();
 		gameSections.add(new GameSection("Prologue"));
@@ -62,8 +58,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		gameSections.add(new GameSection("Chapter 3: The Awakening", 1700, 1000, new ForestLurker()));
 		gameSectionIndex = 1;
 		gameSections.get(gameSectionIndex).start();
-
-		mainPlayer = new MainPlayer(2, "_pixel",150f);
+		mainPlayer = new MainPlayer(3, "_yellow",150f);
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
 		OrthographicCamera orthographicCamera = new OrthographicCamera();
@@ -73,6 +68,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		fontBatch.setProjectionMatrix(orthographicCamera.combined);
 		effectOverlays.setProjectionMatrix(orthographicCamera.combined);
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
+
+		handleClient();
 	}
 
 	@Override
@@ -152,6 +149,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		client = new Client();
 		client.start();
 		Kryo kryo = client.getKryo();
+		kryo.register(Player.class);
 		kryo.register(ServerPlayer.class);
 		kryo.register(Entity.Direction.class);
 		kryo.register(Entity.State.class);

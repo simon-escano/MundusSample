@@ -93,8 +93,10 @@ public abstract class Entity {
         }
 
         if (FRAME_ROWS == 0 || FRAME_COLS == 0) {
+            System.out.println("NULL FRAMES");
             setFrames(5, 8);
         }
+        System.out.println(FRAME_ROWS + " " + FRAME_COLS);
         Texture spriteSheet = new Texture(Gdx.files.internal(spriteSheetPath));
         sprites = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
     }

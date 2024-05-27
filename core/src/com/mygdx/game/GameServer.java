@@ -22,6 +22,7 @@ public class GameServer {
         server.bind(54555, 54777);
 
         kryo = server.getKryo();
+        kryo.register(Player.class);
         kryo.register(ServerPlayer.class);
         kryo.register(Entity.Direction.class);
         kryo.register(Entity.State.class);

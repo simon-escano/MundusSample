@@ -27,6 +27,7 @@ public class Player extends Entity {
             setState(serverPlayer.getState());
         }
 
+        System.out.println(state);
         switch (state) {
             case IDLE:
                 spriteCtr = 0;

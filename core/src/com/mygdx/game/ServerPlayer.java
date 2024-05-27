@@ -2,9 +2,10 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.math.Vector3;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class ServerPlayer {
+public class ServerPlayer implements Serializable {
     private int id;
     private Vector3 position;
     private Entity.Direction direction;
