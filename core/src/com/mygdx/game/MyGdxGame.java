@@ -32,11 +32,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	public MapDecals mapDecals;
 	private ArrayList<Player> otherPlayers;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
-	private ArrayList<Leviathan> leviathans;
+	private ArrayList<GameSection> gameSections;
+	public static int gameSectionIndex;
 	private boolean showMapDecals = true;
 	public static MainPlayer mainPlayer;
-	private SpriteBatch fontBatch;
-	private BitmapFont font;
+	public static SpriteBatch effectOverlays;
+	public static SpriteBatch fontBatch;
+	public static BitmapFont font;
 
 	public static Client client;
 
@@ -48,23 +50,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		scene = mundus.loadScene("Main Scene.mundus");
 
 		handleClient();
-
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
 		mapDecals = new MapDecals();
 
 		System.out.println(terrain.terrainWidth + " " + terrain.terrainDepth);
 
+		gameSections = new ArrayList<>();
+		gameSections.add(new GameSection("Prologue"));
+		gameSections.add(new GameSection("Chapter 1: Stranded", 670, 200, new Python()));
+		gameSections.add(new GameSection("Chapter 2: The Orbs' Quest"));
+		gameSections.add(new GameSection("Chapter 3: The Awakening"));
+		gameSectionIndex = 0;
+		gameSections.get(gameSectionIndex).start();
+
 		mainPlayer = new MainPlayer(2, "_pixel",150f);
-		leviathans = new ArrayList<>();
-		leviathans.add(new Python());
-		leviathans.add(new ForestLurker());
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
-		OrthographicCamera fontCam = new OrthographicCamera();
-		fontCam.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		OrthographicCamera orthographicCamera = new OrthographicCamera();
+		orthographicCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		fontBatch = new SpriteBatch();
-		fontBatch.setProjectionMatrix(fontCam.combined);
-
+		effectOverlays = new SpriteBatch();
+		fontBatch.setProjectionMatrix(orthographicCamera.combined);
+		effectOverlays.setProjectionMatrix(orthographicCamera.combined);
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
 	}
 
@@ -73,11 +80,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		ScreenUtils.clear(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		gameSections.get(gameSectionIndex).update();
+
 		if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
 			showMapDecals = !showMapDecals;
 		}
-
-		mainPlayer.update();
 
 		while (!playerUpdates.isEmpty()) {
 			ServerPlayer serverPlayer = playerUpdates.poll();
@@ -88,10 +95,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (player.serverPlayer.getID() != mainPlayer.serverPlayer.getID()) {
 				player.update();
 			}
-		}
-
-		for (Leviathan leviathan : leviathans) {
-			leviathan.update();
 		}
 
 		scene.sceneGraph.update();
@@ -111,6 +114,8 @@ public class MyGdxGame extends ApplicationAdapter {
 				mainPlayer.serverPlayer.toString()
 			}
 		};
+
+		mainPlayer.update();
 
 		for (int i = 0; i < strings.length; i++) {
 			for (int j = 0; j < strings[i].length; j++) {

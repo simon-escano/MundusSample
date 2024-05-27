@@ -3,6 +3,9 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -41,6 +44,15 @@ public class MainPlayer extends Player {
             potentialPosition.y = newHeight;
             setPosition(potentialPosition);
             camera.position.set(potentialPosition);
+        }
+
+        Vector3 waterPosition = new Vector3(1192.29f, 196.15f, 294.11f);
+        float waterSize = 2500;
+        if ((position.x > waterPosition.x && position.x < waterPosition.x + waterSize) &&
+                (position.y < waterPosition.y) && (position.z > waterPosition.z && position.z < waterPosition.z + waterSize)
+        ) {
+            MyGdxGame.fontBatch.setColor(1, 1, 1, 0.25f);
+            MyGdxGame.fontBatch.draw(new Texture("water_overlay.png"), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D)) {
