@@ -15,7 +15,8 @@ public class GameServer {
     Server server;
     Kryo kryo;
 
-    private final Map<Integer, ServerPlayer> players = new HashMap<>();
+    public final Map<Integer, ServerPlayer> players = new HashMap<>();
+    private int gameStateIndex;
 
     public GameServer() throws IOException {
         server = new Server();
@@ -23,7 +24,6 @@ public class GameServer {
         server.bind(54555, 54777);
 
         kryo = server.getKryo();
-        kryo.register(Player.class);
         kryo.register(ServerPlayer.class);
         kryo.register(Entity.Direction.class);
         kryo.register(Entity.State.class);
@@ -39,10 +39,14 @@ public class GameServer {
                     players.put(player.getID(), player);
                     System.out.println("Received.");
 
-                    // Broadcast updated players to all clients
                     for (ServerPlayer pos : players.values()) {
                         server.sendToAllExceptTCP(connection.getID(),pos);
                     }
+                }
+
+                if (object instanceof Integer) {
+                    gameStateIndex = (Integer) object;
+                    server.sendToAllTCP(gameStateIndex);
                 }
             }
             @Override

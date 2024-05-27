@@ -5,9 +5,11 @@ import com.badlogic.gdx.math.Vector3;
 public abstract class Leviathan extends Entity {
     private float detectionThreshold = 12.0f;
     private float avoidanceDistance = 5.0f;
-
     public Leviathan(String spriteSheetPath, int spriteWidth, int spriteHeight, float velocity) {
         super("leviathans/" + spriteSheetPath, spriteWidth, spriteHeight, velocity);
+    }
+
+    public void update() {
     }
 
     public Leviathan(String spriteSheetPath, int spriteWidth, int spriteHeight, float velocity, int FRAME_ROWS, int FRAME_COLS) {

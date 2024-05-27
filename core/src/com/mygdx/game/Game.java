@@ -1,10 +1,8 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -34,7 +32,7 @@ public class Game extends ApplicationAdapter {
 	public static Terrain terrain;
 	public static DecalBatch decalBatch;
 	public MapDecals mapDecals;
-	private ArrayList<Player> otherPlayers;
+	public static ArrayList<Player> players;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
 	public static ArrayList<GameState> gameStates;
 	public static int gameStateIndex;
@@ -52,7 +50,7 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		otherPlayers = new ArrayList<>();
+		players = new ArrayList<>();
 		playerUpdates = new ConcurrentLinkedQueue<>();
 		mundus = new Mundus(Gdx.files.internal("world"));
 		scene = mundus.loadScene("Main Scene.mundus");
@@ -65,9 +63,9 @@ public class Game extends ApplicationAdapter {
 		gameStates.add(new GameState("Chapter 2: The Forest of Shadows", 1800, 2500, new ForestLurker()));
 		gameStates.add(new GameState("Chapter 2: The Ruins of The Forgotten", 1700, 1000));
 		gameStates.add(new GameState("Chapter 3: The Awakening", new Cthulhu()));
-
-		gameStateIndex = 0;
+		gameStateIndex = 1;
 		gameStates.get(gameStateIndex).start();
+
 		mainPlayer = new MainPlayer(id, color,150f);
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
@@ -104,7 +102,7 @@ public class Game extends ApplicationAdapter {
 			updatePlayers(serverPlayer);
 		}
 
-		for (Player player : otherPlayers) {
+		for (Player player : players) {
 			if (player.serverPlayer.getID() != mainPlayer.serverPlayer.getID()) {
 				player.update();
 			}
@@ -124,7 +122,7 @@ public class Game extends ApplicationAdapter {
 		font.setColor(Color.WHITE);
 		String[][] strings = {
 			{
-				mainPlayer.serverPlayer.toString()
+				mainPlayer.serverPlayer.toString(),
 			}
 		};
 
@@ -140,7 +138,7 @@ public class Game extends ApplicationAdapter {
 
 	public void updatePlayers(ServerPlayer serverPlayer) {
 		boolean updated = false;
-		for (Player player : otherPlayers) {
+		for (Player player : players) {
 			if (player.serverPlayer.getID() == serverPlayer.getID()) {
 				player.serverPlayer.setPosition(serverPlayer.getPosition());
 				player.serverPlayer.setDirection(serverPlayer.getDirection());
@@ -150,7 +148,7 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 		if (!updated) {
-			otherPlayers.add(new Player(serverPlayer));
+			players.add(new Player(serverPlayer));
 		}
 	}
 
@@ -158,7 +156,7 @@ public class Game extends ApplicationAdapter {
 		client = new Client();
 		client.start();
 		Kryo kryo = client.getKryo();
-		kryo.register(Player.class);
+//		kryo.register(ServerLeviathan.class);
 		kryo.register(ServerPlayer.class);
 		kryo.register(Entity.Direction.class);
 		kryo.register(Entity.State.class);
@@ -166,8 +164,8 @@ public class Game extends ApplicationAdapter {
 		kryo.register(String.class);
 
 		try {
-//			client.connect(5000, "localhost", 54555, 54777);
-			client.connect(5000, "54.253.165.207", 54555, 54777);
+			client.connect(5000, "localhost", 54555, 54777);
+//			client.connect(5000, "54.253.165.207", 54555, 54777);
 		} catch (IOException e) {
 			Gdx.app.log("GameClient", "Unable to connect to server: " + e.getMessage());
 			Gdx.app.exit();
@@ -176,11 +174,17 @@ public class Game extends ApplicationAdapter {
 		client.addListener(new Listener() {
 			@Override
 			public void received(Connection connection, Object object) {
-			if (object instanceof ServerPlayer) {
-				ServerPlayer player = (ServerPlayer) object;
-				playerUpdates.add(player);
-				System.out.println("Received from server.");
-			}
+				if (object instanceof ServerPlayer) {
+					ServerPlayer player = (ServerPlayer) object;
+					playerUpdates.add(player);
+					System.out.println("Received from server.");
+				}
+
+				if (object instanceof Integer) {
+					gameStateIndex = (Integer) object;
+					System.out.println(gameStateIndex);
+					gameStates.get(gameStateIndex).start();
+				}
 			}
 		});
 	}

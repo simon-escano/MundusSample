@@ -8,6 +8,6 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("MundusSample");
-		new Lwjgl3Application(new Game(2, "_yellow"), config);
+		new Lwjgl3Application(new Game(5, "_red"), config);
 	}
 }

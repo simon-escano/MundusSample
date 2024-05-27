@@ -34,14 +34,13 @@ public class GameState {
     public void start() {
         inProgress = true;
         setMusic("sounds/ambience.mp3");
-        music.play(1.0f);
+//        music.play(1.0f);
     }
 
     public void end() {
         inProgress = false;
-        if (Game.gameStateIndex < 4) {
-            Game.gameStateIndex++;
-            Game.gameStates.get(Game.gameStateIndex).start();
+        if (Game.gameStateIndex < Game.gameStates.size()) {
+            Game.client.sendTCP(Game.gameStateIndex + 1);
         }
     }
 
