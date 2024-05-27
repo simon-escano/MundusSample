@@ -54,11 +54,13 @@ public class MyGdxGame extends ApplicationAdapter {
 		gameSections = new ArrayList<>();
 		gameSections.add(new GameSection("Prologue"));
 		gameSections.add(new GameSection("Chapter 1: Stranded", 670, 2000, new Python()));
-		gameSections.add(new GameSection("Chapter 2: The Orbs' Quest", 1800, 2500, new ForestLurker()));
-		gameSections.add(new GameSection("Chapter 3: The Awakening", 1700, 1000, new ForestLurker()));
+		gameSections.add(new GameSection("Chapter 2: The Forest of Shadows", 1800, 2500, new ForestLurker()));
+		gameSections.add(new GameSection("Chapter 2: The Ruins of The Forgotten", 1700, 1000));
+		gameSections.add(new GameSection("Chapter 3: The Awakening", new Cthulhu()));
+
 		gameSectionIndex = 1;
 		gameSections.get(gameSectionIndex).start();
-		mainPlayer = new MainPlayer(3, "_yellow",150f);
+		mainPlayer = new MainPlayer(3, "_pixel",150f);
 
 		font = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
 		OrthographicCamera orthographicCamera = new OrthographicCamera();

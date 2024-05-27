@@ -17,6 +17,17 @@ public class GameSection {
         this.title = title;
     }
 
+    public GameSection(String title, float orbX, float orbZ) {
+        inProgress = false;
+        this.title = title;
+    }
+
+    public GameSection(String title, Leviathan leviathan) {
+        inProgress = false;
+        this.title = title;
+        this.leviathan = leviathan;
+    }
+
     public void start() {
         inProgress = true;
     }
@@ -33,13 +44,13 @@ public class GameSection {
         if (!inProgress) {
             return;
         }
-        if (orb != null) {
+        try {
             if (orb.isCollected) {
                 end();
             } else {
-                leviathan.update();
                 orb.update();
+                leviathan.update();
             }
-        }
+        } catch (NullPointerException ignored) {}
     }
 }

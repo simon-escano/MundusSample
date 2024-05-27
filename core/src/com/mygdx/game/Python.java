@@ -7,7 +7,6 @@ public class Python extends Leviathan {
     public Python() {
         super("python_head.png", 200, 200, 2f, 3, 8);
         System.out.println(DecalHelper.offset(200));
-        setFrames(3, 8);
         setPosition(860, getY(860, 440) , 440);
     }
 

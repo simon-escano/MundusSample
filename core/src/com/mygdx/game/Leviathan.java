@@ -3,8 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.math.Vector3;
 
 public abstract class Leviathan extends Entity {
-    private float detectionThreshold = 12.0f; // The height difference threshold to detect bumps
-    private float avoidanceDistance = 5.0f; // The distance to move away when encountering a bump
+    private float detectionThreshold = 12.0f;
+    private float avoidanceDistance = 5.0f;
 
     public Leviathan(String spriteSheetPath, int spriteWidth, int spriteHeight, float velocity) {
         super("leviathans/" + spriteSheetPath, spriteWidth, spriteHeight, velocity);

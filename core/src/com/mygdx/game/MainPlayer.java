@@ -12,11 +12,12 @@ import java.io.Serializable;
 public class MainPlayer extends Player implements Serializable {
     private final FirstPersonCameraController controller;
     private final Camera camera;
+    private boolean isFlying = false;
 
     public MainPlayer(int id, String color, float velocity) {
         super();
+        System.out.println(FRAME_ROWS);
         serverPlayer = new ServerPlayer(id, color);
-
         camera = MyGdxGame.scene.cam;
         camera.position.set(serverPlayer.getPosition());
         setPosition(camera.position);
@@ -36,10 +37,10 @@ public class MainPlayer extends Player implements Serializable {
             setPosition(pastPosition);
             camera.position.set(pastPosition);
         } else {
-            if (potentialPosition.x < 0) potentialPosition.x = 0;
-            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
-            if (potentialPosition.z < 0) potentialPosition.z = 0;
-            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
+//            if (potentialPosition.x < 0) potentialPosition.x = 0;
+//            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
+//            if (potentialPosition.z < 0) potentialPosition.z = 0;
+//            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
             potentialPosition.y = newHeight;
             setPosition(potentialPosition);
             camera.position.set(potentialPosition);

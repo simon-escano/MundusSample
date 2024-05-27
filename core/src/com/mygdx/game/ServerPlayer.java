@@ -5,12 +5,12 @@ import com.badlogic.gdx.math.Vector3;
 import java.io.Serializable;
 import java.util.Random;
 
-public class ServerPlayer implements Serializable {
-    private int id;
-    private Vector3 position;
-    private Entity.Direction direction;
-    private Entity.State state;
-    private String color;
+public class ServerPlayer {
+    public int id;
+    public Vector3 position;
+    public Entity.Direction direction;
+    public Entity.State state;
+    public String color;
 
     public ServerPlayer() {}
 

@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import java.io.Serializable;
 
 public abstract class Entity {
-    private static int FRAME_COLS, FRAME_ROWS;
+    public int FRAME_COLS, FRAME_ROWS;
 
     public enum Direction implements Serializable {
         S, SW, W, NW, N, NE, E, SE
@@ -96,7 +96,6 @@ public abstract class Entity {
             System.out.println("NULL FRAMES");
             setFrames(5, 8);
         }
-        System.out.println(FRAME_ROWS + " " + FRAME_COLS);
         Texture spriteSheet = new Texture(Gdx.files.internal(spriteSheetPath));
         sprites = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / FRAME_COLS, spriteSheet.getHeight() / FRAME_ROWS);
     }
