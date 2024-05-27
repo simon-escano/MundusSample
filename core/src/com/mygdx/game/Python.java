@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector3;
 public class Python extends Leviathan {
     public Python() {
         super("python_head.png", 200, 200, 2f, 3, 8);
-        System.out.println(DecalHelper.offset(200));
         setPosition(860, getY(860, 440) , 440);
     }
 
@@ -32,17 +31,17 @@ public class Python extends Leviathan {
             setPosition(pastPosition);
         } else {
             if (potentialPosition.x < 0) potentialPosition.x = 0;
-            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
+            if (potentialPosition.x > Game.terrain.terrainWidth) potentialPosition.x = Game.terrain.terrainWidth;
             if (potentialPosition.z < 0) potentialPosition.z = 0;
-            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
+            if (potentialPosition.z > Game.terrain.terrainWidth) potentialPosition.z = Game.terrain.terrainWidth;
             potentialPosition.y = newHeight;
             setPosition(potentialPosition);
         }
 
-        setDirection(chase(MyGdxGame.mainPlayer.getPosition()));
+        setDirection(chase(Game.mainPlayer.getPosition()));
 
-        MyGdxGame.decalBatch.add(decal);
-        DecalHelper.applyLighting(decal, MyGdxGame.scene.cam);
-        DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
+        Game.decalBatch.add(decal);
+        DecalHelper.applyLighting(decal, Game.scene.cam);
+        DecalHelper.faceCameraPerpendicularToGround(decal, Game.scene.cam);
     }
 }

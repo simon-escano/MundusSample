@@ -20,9 +20,9 @@ public class MapDecals {
 
     public void update() {
         for (Decal decal : mapDecals) {
-            MyGdxGame.decalBatch.add(decal);
-            DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
-            DecalHelper.applyLighting(decal, MyGdxGame.scene.cam);
+            Game.decalBatch.add(decal);
+            DecalHelper.faceCameraPerpendicularToGround(decal, Game.scene.cam);
+            DecalHelper.applyLighting(decal, Game.scene.cam);
         }
     }
 
@@ -31,7 +31,7 @@ public class MapDecals {
             Decal decal = Decal.newDecal(100, 120, trees[(int) (Math.random() * 4)][(int) (Math.random() * 4)],true);
             int randomX = (int) (Math.random() * ((2100 - 150) + 1)) + 150;
             int randomZ = (int) (Math.random() * ((2800 - 2130) + 1)) + 2130;
-            float height = MyGdxGame.terrain.getHeightAtWorldCoord(randomX, randomZ, new Matrix4()) + DecalHelper.offset(120);
+            float height = Game.terrain.getHeightAtWorldCoord(randomX, randomZ, new Matrix4()) + DecalHelper.offset(120);
 
             decal.setPosition(randomX,height,randomZ);
             mapDecals.add(decal);

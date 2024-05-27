@@ -39,22 +39,22 @@ public class ForestLurker extends Leviathan {
             setPosition(pastPosition);
         } else {
             if (potentialPosition.x < 0) potentialPosition.x = 0;
-            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
+            if (potentialPosition.x > Game.terrain.terrainWidth) potentialPosition.x = Game.terrain.terrainWidth;
             if (potentialPosition.z < 0) potentialPosition.z = 0;
-            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
+            if (potentialPosition.z > Game.terrain.terrainWidth) potentialPosition.z = Game.terrain.terrainWidth;
             potentialPosition.y = newHeight;
             setPosition(potentialPosition);
         }
 
-        if (position.dst(MyGdxGame.mainPlayer.getPosition()) < 500) {
-            setDirection(chase(MyGdxGame.mainPlayer.getPosition()));
+        if (position.dst(Game.mainPlayer.getPosition()) < 500) {
+            setDirection(chase(Game.mainPlayer.getPosition()));
             setState(State.WALKING);
         } else {
             setState(State.IDLE);
         }
 
-        MyGdxGame.decalBatch.add(decal);
-        DecalHelper.applyLighting(decal, MyGdxGame.scene.cam);
-        DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
+        Game.decalBatch.add(decal);
+        DecalHelper.applyLighting(decal, Game.scene.cam);
+        DecalHelper.faceCameraPerpendicularToGround(decal, Game.scene.cam);
     }
 }

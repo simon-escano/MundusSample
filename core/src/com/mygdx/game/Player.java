@@ -21,11 +21,9 @@ public class Player extends Entity {
     }
 
     public void update() {
-        if (serverPlayer != null) {
-            setPosition(serverPlayer.getPosition());
-            setDirection(serverPlayer.getDirection());
-            setState(serverPlayer.getState());
-        }
+        setPosition(serverPlayer.getPosition());
+        setDirection(serverPlayer.getDirection());
+        setState(serverPlayer.getState());
 
         switch (state) {
             case IDLE:
@@ -50,9 +48,9 @@ public class Player extends Entity {
         }
 
         setPosition(position.x, getY(), position.z);
-        MyGdxGame.decalBatch.add(decal);
-        DecalHelper.applyLighting(decal, MyGdxGame.scene.cam);
-        DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
+        Game.decalBatch.add(decal);
+        DecalHelper.applyLighting(decal, Game.scene.cam);
+        DecalHelper.faceCameraPerpendicularToGround(decal, Game.scene.cam);
     }
 
     @Override

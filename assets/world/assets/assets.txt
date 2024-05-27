@@ -1,3 +1,5 @@
+a3e9f.png
+a3e9f.png.meta
 back.png
 back.png.meta
 bottom.png
@@ -30,6 +32,8 @@ skybox_default.png
 skybox_default.png.meta
 Terrain.terra
 Terrain.terra.meta
+Terrain2.terra
+Terrain2.terra.meta
 terrain_default.mat
 terrain_default.mat.meta
 top.png

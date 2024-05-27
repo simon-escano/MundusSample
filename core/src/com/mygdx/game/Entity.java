@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 import java.io.Serializable;
@@ -125,8 +124,8 @@ public abstract class Entity {
     }
 
     public Direction getDirectionToCamera() {
-        float deltaX = MyGdxGame.scene.cam.position.x - position.x;
-        float deltaZ = MyGdxGame.scene.cam.position.z - position.z;
+        float deltaX = Game.scene.cam.position.x - position.x;
+        float deltaZ = Game.scene.cam.position.z - position.z;
         return Utils.vectorToDirection(deltaX, deltaZ);
     }
 

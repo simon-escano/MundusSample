@@ -34,6 +34,6 @@ public class Utils {
     }
 
     public static float getHeight(float x, float z) {
-        return MyGdxGame.terrain.getHeightAtWorldCoord(x, z, new Matrix4());
+        return Game.terrain.getHeightAtWorldCoord(x, z, new Matrix4());
     }
 }

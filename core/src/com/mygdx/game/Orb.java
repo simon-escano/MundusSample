@@ -24,8 +24,8 @@ public class Orb {
 
     public void update() {
         if (!isCollected) {
-            MyGdxGame.decalBatch.add(decal);
-            DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
+            Game.decalBatch.add(decal);
+            DecalHelper.faceCameraPerpendicularToGround(decal, Game.scene.cam);
         }
     }
 }

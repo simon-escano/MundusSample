@@ -18,11 +18,11 @@ public class MainPlayer extends Player implements Serializable {
         super();
         System.out.println(FRAME_ROWS);
         serverPlayer = new ServerPlayer(id, color);
-        camera = MyGdxGame.scene.cam;
+        camera = Game.scene.cam;
         camera.position.set(serverPlayer.getPosition());
         setPosition(camera.position);
         setPosition(serverPlayer.getPosition());
-        controller = new FirstPersonCameraController(MyGdxGame.scene.cam);
+        controller = new FirstPersonCameraController(Game.scene.cam);
         setVelocity(velocity);
         Gdx.input.setInputProcessor(controller);
     }
@@ -51,8 +51,8 @@ public class MainPlayer extends Player implements Serializable {
         if ((position.x > waterPosition.x && position.x < waterPosition.x + waterSize) &&
                 (position.y < waterPosition.y) && (position.z > waterPosition.z && position.z < waterPosition.z + waterSize)
         ) {
-            MyGdxGame.fontBatch.setColor(1, 1, 1, 0.25f);
-            MyGdxGame.fontBatch.draw(new Texture("water_overlay.png"), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            Game.fontBatch.setColor(1, 1, 1, 0.25f);
+            Game.fontBatch.draw(new Texture("water_overlay.png"), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.D)) {
@@ -67,7 +67,7 @@ public class MainPlayer extends Player implements Serializable {
 
         setDirection(Utils.vectorToDirection(camera.direction.x, camera.direction.z));
 
-        MyGdxGame.client.sendTCP(this.serverPlayer);
+        Game.client.sendTCP(this.serverPlayer);
     }
 
     @Override
