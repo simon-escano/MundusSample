@@ -32,7 +32,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public MapDecals mapDecals;
 	private ArrayList<Player> otherPlayers;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
-	private ArrayList<GameSection> gameSections;
+	public static ArrayList<GameSection> gameSections;
 	public static int gameSectionIndex;
 	private boolean showMapDecals = true;
 	public static MainPlayer mainPlayer;
@@ -57,10 +57,10 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		gameSections = new ArrayList<>();
 		gameSections.add(new GameSection("Prologue"));
-		gameSections.add(new GameSection("Chapter 1: Stranded", 670, 200, new Python()));
-		gameSections.add(new GameSection("Chapter 2: The Orbs' Quest"));
-		gameSections.add(new GameSection("Chapter 3: The Awakening"));
-		gameSectionIndex = 0;
+		gameSections.add(new GameSection("Chapter 1: Stranded", 670, 2000, new Python()));
+		gameSections.add(new GameSection("Chapter 2: The Orbs' Quest", 1800, 2500, new ForestLurker()));
+		gameSections.add(new GameSection("Chapter 3: The Awakening", 1700, 1000, new ForestLurker()));
+		gameSectionIndex = 1;
 		gameSections.get(gameSectionIndex).start();
 
 		mainPlayer = new MainPlayer(2, "_pixel",150f);
@@ -84,6 +84,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
 			showMapDecals = !showMapDecals;
+		}
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+			if (mainPlayer.position.dst(gameSections.get(gameSectionIndex).orb.position) < 50) {
+				System.out.println("picking up");
+				gameSections.get(gameSectionIndex).orb.pickup();
+			}
 		}
 
 		while (!playerUpdates.isEmpty()) {

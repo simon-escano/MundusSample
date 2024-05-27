@@ -25,6 +25,7 @@ public class GameSection {
         inProgress = false;
         if (MyGdxGame.gameSectionIndex < 3) {
             MyGdxGame.gameSectionIndex++;
+            MyGdxGame.gameSections.get(MyGdxGame.gameSectionIndex).start();
         }
     }
 

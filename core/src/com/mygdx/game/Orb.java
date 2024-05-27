@@ -13,7 +13,8 @@ public class Orb {
     public Orb(float x, float z) {
         position = new Vector3();
         position.set(x, Utils.getHeight(x, z), z);
-        decal = Decal.newDecal(new TextureRegion(new Texture("orb.png")));
+        decal = Decal.newDecal( 40, 40, new TextureRegion(new Texture("orb.png")), true);
+        decal.setPosition(position);
         isCollected = false;
     }
 
@@ -24,6 +25,7 @@ public class Orb {
     public void update() {
         if (!isCollected) {
             MyGdxGame.decalBatch.add(decal);
+            DecalHelper.faceCameraPerpendicularToGround(decal, MyGdxGame.scene.cam);
         }
     }
 }
