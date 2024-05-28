@@ -40,6 +40,9 @@ public class GameState {
     public void end() {
         inProgress = false;
         music.stop();
+        if (title.equals("Chapter 3: The Awakening")) {
+            Gdx.app.exit();
+        }
         if (Game.gameStateIndex < Game.gameStates.size()) {
             Game.client.sendTCP(Game.gameStateIndex + 1);
         }

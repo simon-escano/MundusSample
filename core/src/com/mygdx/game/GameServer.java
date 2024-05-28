@@ -58,7 +58,7 @@ public class GameServer {
     }
 
     public static void main(String[] args) throws IOException {
-        new LoginServer();
+//        new LoginServer();
         new GameServer();
 
         Scanner sc = new Scanner(System.in);

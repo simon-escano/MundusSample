@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter id: ");
 		int id = sc.nextInt();
+		sc.nextLine();
 		System.out.print("Enter color { normal, pixel, red, yellow }: ");
 		String color = sc.nextLine();
 		switch (color) {
@@ -26,6 +27,7 @@ public class DesktopLauncher {
 			Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 			config.setForegroundFPS(60);
 			config.setTitle("MundusSample");
+			config.setBackBufferConfig(8, 8, 8, 8, 24, 0,4);
 			new Lwjgl3Application(new Game(id, color), config);
 		}
 	}

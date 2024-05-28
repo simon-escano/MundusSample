@@ -70,7 +70,7 @@ public class Game extends ApplicationAdapter {
 		gameStates.add(new GameState("Chapter 1: Stranded", 670, 2000, new Python()));
 		gameStates.add(new GameState("Chapter 2: The Forest of Shadows", 1800, 2500, new ForestLurker()));
 		gameStates.add(new GameState("Chapter 2: The Ruins of The Forgotten", 1700, 1000));
-		gameStates.add(new GameState("Chapter 3: The Awakening", new Cthulhu()));
+		gameStates.add(new GameState("Chapter 3: The Awakening", 260, 230, new Cthulhu()));
 		gameStateIndex = 1;
 		gameStates.get(gameStateIndex).start();
 
@@ -130,7 +130,7 @@ public class Game extends ApplicationAdapter {
 		font.setColor(Color.WHITE);
 		String[][] strings = {
 			{
-				mainPlayer.serverPlayer.toString(),
+				gameStates.get(gameStateIndex).title
 			}
 		};
 
@@ -171,8 +171,8 @@ public class Game extends ApplicationAdapter {
 		kryo.register(String.class);
 
 		try {
-			client.connect(5000, "localhost", 54555, 54777);
-//			client.connect(5000, "54.253.165.207", 54555, 54777);
+//			client.connect(5000, "localhost", 54555, 54777);
+			client.connect(5000, "3.27.232.201", 54555, 54777);
 		} catch (IOException e) {
 			Gdx.app.log("GameClient", "Unable to connect to server: " + e.getMessage());
 			Gdx.app.exit();
