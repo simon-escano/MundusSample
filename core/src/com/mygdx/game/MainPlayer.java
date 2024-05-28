@@ -2,12 +2,16 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.backends.lwjgl.audio.Mp3;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Vector3;
 
+import javax.lang.model.element.VariableElement;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MainPlayer extends Player implements Serializable {
     private final FirstPersonCameraController controller;
@@ -33,14 +37,28 @@ public class MainPlayer extends Player implements Serializable {
         Vector3 potentialPosition = new Vector3(camera.position);
         float newHeight = Utils.getHeight(potentialPosition.x, potentialPosition.z);
 
+        if (Objects.requireNonNull(state) == State.WALKING) {
+            setVelocity(100f);
+            stateTime += Gdx.graphics.getDeltaTime();
+            if (stateTime > 0.5) {
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/walk.mp3"));
+                sound.play(0.5f);
+                stateTime = 0;
+            }
+        } else if (Objects.requireNonNull(state) == State.SPRINTING) {
+            setVelocity(150f);
+            stateTime += Gdx.graphics.getDeltaTime();
+            if (stateTime > 0.3) {
+                Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/walk.mp3"));
+                sound.play(0.5f);
+                stateTime = 0;
+            }
+        }
+
         if (newHeight - pastPosition.y > 12) {
             setPosition(pastPosition);
             camera.position.set(pastPosition);
         } else {
-//            if (potentialPosition.x < 0) potentialPosition.x = 0;
-//            if (potentialPosition.x > MyGdxGame.terrain.terrainWidth) potentialPosition.x = MyGdxGame.terrain.terrainWidth;
-//            if (potentialPosition.z < 0) potentialPosition.z = 0;
-//            if (potentialPosition.z > MyGdxGame.terrain.terrainWidth) potentialPosition.z = MyGdxGame.terrain.terrainWidth;
             potentialPosition.y = newHeight;
             setPosition(potentialPosition);
             camera.position.set(potentialPosition);
@@ -67,6 +85,21 @@ public class MainPlayer extends Player implements Serializable {
 
         setDirection(Utils.vectorToDirection(camera.direction.x, camera.direction.z));
 
+        Game.client.sendTCP(this.serverPlayer);
+    }
+
+    public void die(Leviathan leviathan) {
+        Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.mp3"));
+        sound.play(0.5f);
+
+        if (leviathan instanceof Cthulhu) {
+            setPosition(9999, Utils.getHeight(9999, 9999), 9999);
+        } else {
+            setPosition(260, Utils.getHeight(260, 230), 230);
+        }
+
+        setPosition(260, Utils.getHeight(260, 230), 230);
+        camera.position.set(position);
         Game.client.sendTCP(this.serverPlayer);
     }
 

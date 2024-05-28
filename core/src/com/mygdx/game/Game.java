@@ -3,9 +3,11 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
@@ -16,6 +18,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
 import com.mbrlabs.mundus.commons.Scene;
 import com.mbrlabs.mundus.commons.terrain.Terrain;
 import com.mbrlabs.mundus.runtime.Mundus;
@@ -33,6 +36,7 @@ public class Game extends ApplicationAdapter {
 	public static DecalBatch decalBatch;
 	public MapDecals mapDecals;
 	public static ArrayList<Player> players;
+	public static ArrayList<ServerLeviathan> leviathans;
 	private ConcurrentLinkedQueue<ServerPlayer> playerUpdates;
 	public static ArrayList<GameState> gameStates;
 	public static int gameStateIndex;
@@ -48,6 +52,8 @@ public class Game extends ApplicationAdapter {
 		this.color = color;
 	}
 
+
+
 	@Override
 	public void create () {
 		players = new ArrayList<>();
@@ -56,6 +62,8 @@ public class Game extends ApplicationAdapter {
 		scene = mundus.loadScene("Main Scene.mundus");
 		terrain = mundus.getAssetManager().getTerrainAssets().get(0).getTerrain();
 		mapDecals = new MapDecals();
+
+		leviathans = new ArrayList<>();
 
 		gameStates = new ArrayList<>();
 		gameStates.add(new GameState("Prologue"));
@@ -76,7 +84,7 @@ public class Game extends ApplicationAdapter {
 		fontBatch.setProjectionMatrix(orthographicCamera.combined);
 		effectOverlays.setProjectionMatrix(orthographicCamera.combined);
 		decalBatch = new DecalBatch(new CameraGroupStrategy(scene.cam));
-
+		Gdx.input.setCursorCatched(true);
 		handleClient();
 	}
 
@@ -156,7 +164,6 @@ public class Game extends ApplicationAdapter {
 		client = new Client();
 		client.start();
 		Kryo kryo = client.getKryo();
-//		kryo.register(ServerLeviathan.class);
 		kryo.register(ServerPlayer.class);
 		kryo.register(Entity.Direction.class);
 		kryo.register(Entity.State.class);
@@ -177,7 +184,6 @@ public class Game extends ApplicationAdapter {
 				if (object instanceof ServerPlayer) {
 					ServerPlayer player = (ServerPlayer) object;
 					playerUpdates.add(player);
-					System.out.println("Received from server.");
 				}
 
 				if (object instanceof Integer) {
@@ -194,6 +200,7 @@ public class Game extends ApplicationAdapter {
 		mundus.dispose();
 		font.dispose();
 	}
+
 
 	@Override
 	public void resize(int width, int height) {

@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -30,14 +31,14 @@ public class GameServer {
         kryo.register(Vector3.class);
         kryo.register(String.class);
 
-        server.addListener(new Listener(){
+        server.addListener(new Listener() {
             @Override
             public void received(Connection connection, Object object) {
 
                 if (object instanceof ServerPlayer) {
                     ServerPlayer player = (ServerPlayer) object;
                     players.put(player.getID(), player);
-                    System.out.println("Received.");
+                    System.out.println("hey");
 
                     for (ServerPlayer pos : players.values()) {
                         server.sendToAllExceptTCP(connection.getID(),pos);
@@ -57,6 +58,7 @@ public class GameServer {
     }
 
     public static void main(String[] args) throws IOException {
+        new LoginServer();
         new GameServer();
 
         Scanner sc = new Scanner(System.in);
@@ -65,5 +67,6 @@ public class GameServer {
             System.out.println("Stopping server...");
             System.exit(0);
         }
+
     }
 }

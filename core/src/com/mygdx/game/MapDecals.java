@@ -15,7 +15,16 @@ public class MapDecals {
         mapDecals = new Array<>();
         Texture spriteSheet = new Texture(Gdx.files.internal("map_decals/trees.png"));
         trees = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / 4, spriteSheet.getHeight() / 5);
-        loadMap();
+        // starting load map...
+        MapLoader mapLoader = new MapLoader(mapDecals, trees);
+        Thread thread = new Thread(mapLoader);
+        thread.start();
+
+        try {
+            thread.join(); // waiting for thread map to complete
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void update() {

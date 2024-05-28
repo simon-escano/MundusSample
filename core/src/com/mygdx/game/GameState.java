@@ -33,12 +33,13 @@ public class GameState {
 
     public void start() {
         inProgress = true;
-        setMusic("sounds/ambience.mp3");
-//        music.play(1.0f);
+        setMusic("sounds/chapter_3.mp3");
+        music.play(0.5f);
     }
 
     public void end() {
         inProgress = false;
+        music.stop();
         if (Game.gameStateIndex < Game.gameStates.size()) {
             Game.client.sendTCP(Game.gameStateIndex + 1);
         }
